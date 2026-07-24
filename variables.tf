@@ -3,19 +3,21 @@ variable "region" {
 }
 
 variable "bucket_name" {
-  default = "company-sftp-storage-demo-123456"
+  default = "aristaconsulting"
 }
 
 variable "users" {
 
-  type = map(string)
+  description = "Transfer Family users"
 
-  default = {
+  type = map(object({
 
-    user1 = "keys/user1.pub"
-    user2 = "keys/user2.pub"
-    user3 = "keys/user3.pub"
+    department = string
 
-  }
+    home_directory = string
+
+    public_key = string
+
+  }))
 
 }
