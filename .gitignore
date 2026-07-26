@@ -1,3 +1,10 @@
+# SSH Keys
+keys/
+
+# IDE
+.vscode/
+.idea/
+
 # Local .terraform directories
 .terraform/
 
