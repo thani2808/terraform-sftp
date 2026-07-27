@@ -37,7 +37,7 @@ resource "aws_transfer_user" "users" {
 resource "aws_transfer_ssh_key" "users" {
   for_each = var.users
 
-  server_id = aws_transfer_server.sftp.id
+  server_id = aws_transfer_server.this.id
   user_name = aws_transfer_user.users[each.key].user_name
   body      = file("${path.module}/keys/${each.key}.pub")
 }
