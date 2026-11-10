@@ -69,3 +69,44 @@ terraform.rc
 keys/*
 *.pem
 *.key
+
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+
+# Local environment configuration
+terraform/terraform.tfvars
+terraform/terraform.tfvars.dev
+terraform/terraform.tfvars.prod
+
+# Private SSH keys
+keys/*
+*.pem
+id_rsa
+id_ed25519
+
+# Ansible inventory
+ansible/inventory.ini
+
+# Python
+__pycache__/
+*.pyc
+
+# Private SSH keys
+keys/ec2-admin/
+keys/sftp-users/*
+*.pem
+id_rsa
+id_ed25519
+
+# Terraform sensitive files
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+
+# Ansible inventory
+ansible/inventory.ini
