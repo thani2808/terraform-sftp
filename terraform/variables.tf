@@ -18,12 +18,17 @@ variable "environment" {
 }
 
 variable "vpc_id" {
-  description = "VPC ID for the SFTP server"
+  description = "Existing VPC ID"
   type        = string
 }
 
 variable "subnet_id" {
-  description = "Subnet ID for the SFTP server"
+  description = "Existing public subnet ID"
+  type        = string
+}
+
+variable "route_table_id" {
+  description = "Existing main route table ID"
   type        = string
 }
 

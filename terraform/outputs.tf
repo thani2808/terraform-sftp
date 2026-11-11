@@ -1,3 +1,4 @@
+
 output "sftp_instance_id" {
   description = "SFTP EC2 instance ID"
   value       = aws_instance.sftp_server.id
@@ -26,4 +27,24 @@ output "sftp_ebs_volume_id" {
 output "sftp_availability_zone" {
   description = "EC2 availability zone"
   value       = aws_instance.sftp_server.availability_zone
+}
+
+output "sftp_vpc_id" {
+  description = "Existing VPC ID"
+  value       = var.vpc_id
+}
+
+output "sftp_internet_gateway_id" {
+  description = "Existing Internet Gateway ID"
+  value       = data.aws_internet_gateway.existing.id
+}
+
+output "sftp_route_table_id" {
+  description = "Existing main route table ID"
+  value       = data.aws_route_table.existing.id
+}
+
+output "sftp_subnet_id" {
+  description = "Existing public subnet ID"
+  value       = var.subnet_id
 }
