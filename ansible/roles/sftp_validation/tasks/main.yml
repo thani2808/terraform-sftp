@@ -1,0 +1,36 @@
+
+---
+- name: Check SFTP storage mount
+  ansible.builtin.command:
+    cmd: findmnt -n -o FSTYPE --target {{ sftp_root }}
+  register: sftp_mount_check
+  changed_when: false
+
+- name: Verify SFTP storage is ext4
+  ansible.builtin.assert:
+    that:
+      - sftp_mount_check.stdout | trim == sftp_ebs_filesystem
+    fail_msg: "SFTP storage is not mounted with the expected filesystem."
+
+- name: Check SSH service
+  ansible.builtin.service_facts:
+
+- name: Verify SSH service is running
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.services['ssh.service'].state == 'running'
+    fail_msg: "SSH service is not running."
+
+- name: Check SFTP user accounts
+  ansible.builtin.command:
+    cmd: "id {{ item.name }}"
+  register: sftp_user_check
+  changed_when: false
+  loop: "{{ sftp_users }}"
+
+- name: Display SFTP configuration result
+  ansible.builtin.debug:
+    msg: >-
+      SFTP validation completed.
+      Storage: {{ sftp_root }}.
+      Users checked: {{ sftp_users | map(attribute='name') | join(', ') }}.

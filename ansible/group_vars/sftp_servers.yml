@@ -1,0 +1,34 @@
+
+---
+# SFTP server configuration
+
+sftp_group: sftp
+sftp_root: /sftp_data
+
+# EBS configuration
+sftp_ebs_device: /dev/nvme1n1
+sftp_ebs_filesystem: ext4
+
+# Keep false until the exact EBS volume is verified
+sftp_format_data_disk: false
+
+# SFTP directory configuration
+sftp_upload_directory: upload
+sftp_authorized_keys_directory: /etc/ssh/authorized_keys
+
+# SFTP users
+sftp_users:
+  - name: thani
+    public_key_file: keys/thani.pub
+
+  - name: raj
+    public_key_file: keys/raj.pub
+
+  - name: ram
+    public_key_file: keys/ram.pub
+
+  - name: srini
+    public_key_file: keys/srini.pub
+
+  - name: bob
+    public_key_file: keys/bob.pub

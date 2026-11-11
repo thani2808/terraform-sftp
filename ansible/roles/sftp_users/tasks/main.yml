@@ -1,0 +1,39 @@
+
+---
+- name: Create SFTP users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    group: "{{ sftp_group }}"
+    home: "{{ sftp_root }}/{{ item.name }}"
+    shell: /usr/sbin/nologin
+    create_home: false
+    password_lock: true
+    state: present
+  loop: "{{ sftp_users }}"
+
+- name: Create user chroot directories
+  ansible.builtin.file:
+    path: "{{ sftp_root }}/{{ item.name }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop: "{{ sftp_users }}"
+
+- name: Create user upload directories
+  ansible.builtin.file:
+    path: "{{ sftp_root }}/{{ item.name }}/{{ sftp_upload_directory }}"
+    state: directory
+    owner: "{{ item.name }}"
+    group: "{{ sftp_group }}"
+    mode: "0750"
+  loop: "{{ sftp_users }}"
+
+- name: Install user public SSH keys
+  ansible.builtin.copy:
+    content: "{{ lookup('file', playbook_dir + '/../' + item.public_key_file) }}"
+    dest: "{{ sftp_authorized_keys_directory }}/{{ item.name }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ sftp_users }}"

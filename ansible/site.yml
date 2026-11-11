@@ -1,0 +1,13 @@
+---
+- name: Configure Company A SFTP server
+  hosts: sftp_servers
+  become: true
+  gather_facts: true
+
+  roles:
+    - server_preparation
+    - ebs_storage
+    - sftp_group
+    - sftp_users
+    - sftp_ssh
+    - sftp_validation

@@ -1,0 +1,8 @@
+---
+- name: Prepare Ubuntu SFTP server
+  hosts: sftp_servers
+  become: true
+  gather_facts: true
+
+  roles:
+    - server_preparation

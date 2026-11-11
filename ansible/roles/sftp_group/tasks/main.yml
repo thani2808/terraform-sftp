@@ -1,0 +1,21 @@
+---
+- name: Create SFTP group
+  ansible.builtin.group:
+    name: "{{ sftp_group }}"
+    state: present
+
+- name: Ensure SFTP root is owned by root
+  ansible.builtin.file:
+    path: "{{ sftp_root }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create SFTP authorized keys directory
+  ansible.builtin.file:
+    path: "{{ sftp_authorized_keys_directory }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
