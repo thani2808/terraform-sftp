@@ -1,0 +1,7 @@
+---
+- name: Configure SFTP-only SSH access
+  hosts: sftp_servers
+  become: true
+  gather_facts: true
+  roles:
+    - sftp_ssh

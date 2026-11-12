@@ -3,6 +3,7 @@
   ansible.builtin.group:
     name: "{{ sftp_group }}"
     state: present
+    system: true
 
 - name: Ensure SFTP root is owned by root
   ansible.builtin.file:

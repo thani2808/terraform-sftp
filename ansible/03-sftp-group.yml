@@ -1,0 +1,7 @@
+---
+- name: Configure SFTP group
+  hosts: sftp_servers
+  become: true
+  gather_facts: true
+  roles:
+    - sftp_group

@@ -1,0 +1,7 @@
+---
+- name: Create SFTP users and directories
+  hosts: sftp_servers
+  become: true
+  gather_facts: true
+  roles:
+    - sftp_users

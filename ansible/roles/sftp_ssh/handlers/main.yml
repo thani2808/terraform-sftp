@@ -1,7 +1,8 @@
-
 ---
 - name: Validate and reload SSH
   listen: Validate and reload SSH
-  ansible.builtin.service:
-    name: ssh
-    state: reloaded
+  ansible.builtin.shell:
+    cmd: |
+      pid=$(pgrep -xo sshd)
+      test -n "$pid"
+      kill -HUP "$pid"

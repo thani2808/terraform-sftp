@@ -1,16 +1,17 @@
 
 ---
-- name: Check whether the SFTP disk exists
+- name: Verify the approved EBS device exists
   ansible.builtin.stat:
     path: "{{ sftp_ebs_device }}"
+    follow: true
   register: sftp_disk
 
-- name: Verify SFTP disk is a block device
+- name: Confirm the EBS device is a block device
   ansible.builtin.assert:
     that:
       - sftp_disk.stat.exists
       - sftp_disk.stat.isblk
-    fail_msg: "SFTP disk {{ sftp_ebs_device }} was not found."
+    fail_msg: "The approved EBS block device was not found."
 
 - name: Read existing filesystem type
   ansible.builtin.command:
@@ -19,31 +20,29 @@
   changed_when: false
   failed_when: false
 
-- name: Refuse formatting without explicit approval
+- name: Refuse unexpected existing filesystem
   ansible.builtin.assert:
     that:
-      - (sftp_disk_filesystem.stdout | trim | length > 0) or (sftp_format_data_disk | bool)
+      - >-
+        (sftp_disk_filesystem.stdout | trim == '') or
+        (sftp_disk_filesystem.stdout | trim == sftp_ebs_filesystem)
     fail_msg: >-
-      No filesystem detected. Verify the AWS EBS volume ID and confirm
-      that this disk is empty before enabling formatting.
+      Unexpected filesystem detected.
+      Expected an empty disk or ext4. No formatting performed.
 
-- name: Create ext4 filesystem on approved empty disk
+- name: Require explicit formatting approval for an empty disk
+  ansible.builtin.assert:
+    that:
+      - sftp_format_data_disk | bool
+    fail_msg: "Formatting is not approved for this empty disk."
+
+  when: sftp_disk_filesystem.stdout | trim == ''
+
+- name: Create ext4 filesystem on the approved empty EBS volume
   community.general.filesystem:
     fstype: "{{ sftp_ebs_filesystem }}"
     dev: "{{ sftp_ebs_device }}"
-  when:
-    - sftp_format_data_disk | bool
-    - sftp_disk_filesystem.stdout | trim | length == 0
-
-- name: Verify existing filesystem type
-  ansible.builtin.assert:
-    that:
-      - sftp_disk_filesystem.stdout | trim == sftp_ebs_filesystem
-    fail_msg: >-
-      The existing filesystem is not {{ sftp_ebs_filesystem }}.
-      Stop and investigate before mounting.
-
-  when: sftp_disk_filesystem.stdout | trim | length > 0
+  when: sftp_disk_filesystem.stdout | trim == ''
 
 - name: Create SFTP mount directory
   ansible.builtin.file:
@@ -53,7 +52,7 @@
     group: root
     mode: "0755"
 
-- name: Get filesystem UUID
+- name: Obtain EBS filesystem UUID
   ansible.builtin.command:
     cmd: "blkid -s UUID -o value {{ sftp_ebs_device }}"
   register: sftp_disk_uuid
@@ -63,9 +62,9 @@
   ansible.builtin.assert:
     that:
       - sftp_disk_uuid.stdout | trim | length > 0
-    fail_msg: "Filesystem UUID not found."
+    fail_msg: "Unable to obtain the EBS filesystem UUID."
 
-- name: Mount SFTP EBS disk permanently
+- name: Mount EBS volume permanently
   ansible.posix.mount:
     path: "{{ sftp_root }}"
     src: "UUID={{ sftp_disk_uuid.stdout | trim }}"

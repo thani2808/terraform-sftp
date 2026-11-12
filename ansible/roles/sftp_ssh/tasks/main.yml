@@ -1,11 +1,6 @@
 
 ---
-- name: Remove previous managed SFTP drop-in if present
-  ansible.builtin.file:
-    path: /etc/ssh/sshd_config.d/90-sftp.conf
-    state: absent
-
-- name: Configure SFTP-only SSH access at end of SSH configuration
+- name: Configure SFTP-only SSH access
   ansible.builtin.blockinfile:
     path: /etc/ssh/sshd_config
     marker: "# {mark} ANSIBLE MANAGED SFTP CONFIGURATION"
@@ -23,6 +18,8 @@
           X11Forwarding no
           PermitTunnel no
           AllowAgentForwarding no
+          PermitTTY no
+          DisableForwarding yes
   notify: Validate and reload SSH
 
 - name: Validate SSH configuration

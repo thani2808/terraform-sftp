@@ -1,17 +1,25 @@
-
 ---
-- name: Create SFTP users
+- name: Create authorized keys directory
+  ansible.builtin.file:
+    path: "{{ sftp_authorized_keys_directory }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create SFTP user accounts
   ansible.builtin.user:
     name: "{{ item.name }}"
     group: "{{ sftp_group }}"
-    home: "{{ sftp_root }}/{{ item.name }}"
+    groups: "{{ sftp_group }}"
+    append: false
     shell: /usr/sbin/nologin
+    home: /
     create_home: false
-    password_lock: true
     state: present
   loop: "{{ sftp_users }}"
 
-- name: Create user chroot directories
+- name: Create root-owned SFTP chroot directories
   ansible.builtin.file:
     path: "{{ sftp_root }}/{{ item.name }}"
     state: directory
@@ -20,18 +28,18 @@
     mode: "0755"
   loop: "{{ sftp_users }}"
 
-- name: Create user upload directories
+- name: Create user-writable upload directories
   ansible.builtin.file:
-    path: "{{ sftp_root }}/{{ item.name }}/{{ sftp_upload_directory }}"
+    path: "{{ sftp_root }}/{{ item.name }}/upload"
     state: directory
     owner: "{{ item.name }}"
     group: "{{ sftp_group }}"
     mode: "0750"
   loop: "{{ sftp_users }}"
 
-- name: Install user public SSH keys
+- name: Install SFTP users public keys
   ansible.builtin.copy:
-    content: "{{ lookup('file', playbook_dir + '/../' + item.public_key_file) }}"
+    content: "{{ lookup('ansible.builtin.file', playbook_dir ~ '/../' ~ item.public_key_file) | trim }}\n"
     dest: "{{ sftp_authorized_keys_directory }}/{{ item.name }}"
     owner: root
     group: root
