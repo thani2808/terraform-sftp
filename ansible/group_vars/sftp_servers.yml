@@ -6,7 +6,7 @@ sftp_group: sftp
 sftp_root: /sftp_data
 
 # EBS configuration
-sftp_ebs_device: /dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol01183be1ec21c1a83
+sftp_ebs_device: /dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol07d229fd99b9a1234
 sftp_ebs_filesystem: ext4
 
 # Keep false until the exact EBS volume is verified
